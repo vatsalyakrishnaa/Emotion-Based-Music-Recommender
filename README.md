@@ -31,7 +31,7 @@ User Interface
 
 ✅ Beautiful animated landing page ✅ Secure login/signup system ✅ Responsive design (mobile, tablet, desktop) ✅ Modern gradient themes ✅ Smooth transitions and animations ✅ Intuitive navigation
 
-🎬 Demo Live Demo 🔗 https://chowdamdharanipriya.github.io/Emotion-Based-Music-Recommender/
+🎬 Demo Live Demo 🔗 (https://vatsalyakrishnaa.github.io/Emotion-Based-Music-Recommender/)
 
 🛠️ Technology Stack Frontend
 
