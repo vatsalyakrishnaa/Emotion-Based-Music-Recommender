@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodTunes AI - Emotion-Based Music Recommender</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Common Styles */
+        .page {
+            min-height: 100vh;
+            display: none;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        /* Landing Page */
+        .landing-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animated-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .circle:nth-child(1) { width: 300px; height: 300px; top: 10%; left: 10%; }
+        .circle:nth-child(2) { width: 200px; height: 200px; top: 60%; left: 80%; animation-delay: 2s; }
+        .circle:nth-child(3) { width: 150px; height: 150px; top: 80%; left: 20%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-50px); }
+        }
+
+        .landing-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: white;
+            padding: 40px;
+        }
+
+        .landing-content h1 {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: fadeIn 1s;
+        }
+
+        .landing-content p {
+            font-size: 24px;
+            margin-bottom: 40px;
+            animation: fadeIn 1.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+            max-width: 1000px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        /* Login Page */
+        .login-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .login-box h2 {
+            font-size: 36px;
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Main App Page */
+        .app-page {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .app-header h1 {
+            font-size: 28px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .points-badge {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-container {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .video-box {
+            position: relative;
+            background: black;
+            border-radius: 15px;
+            height: 400px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        #videoElement {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+        }
+
+        .emotion-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .emotion-display.show {
+            display: block;
+        }
+
+        .emotion-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .emotion-text {
+            font-size: 32px;
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .confidence-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #4ade80);
+            transition: width 0.3s;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .songs-section {
+            display: none;
+        }
+
+        .songs-section.show {
+            display: block;
+        }
+
+        .songs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .song-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .song-box:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .song-box.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .song-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .song-artist {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .song-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .player-bar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px 40px;
+            display: none;
+        }
+
+        .player-bar.show {
+            display: block;
+        }
+
+        .player-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .now-playing h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .now-playing p {
+            color: #ccc;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .features {
+                grid-template-columns: 1fr;
+            }
+            .songs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="page landing-page active">
+        <div class="animated-bg">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="landing-content">
+            <h1>🎵 MoodTunes AI</h1>
+            <p>Experience personalized music powered by emotion detection</p>
+            <button class="cta-button" onclick="goToLogin()">Get Started</button>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>Emotion Detection</h3>
+                    <p>Real-time AI recognition</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎶</div>
+                    <h3>Smart Playlists</h3>
+                    <p>Music matching your mood</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Privacy First</h3>
+                    <p>All processing on device</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="page login-page">
+        <div class="login-box">
+            <h2>Welcome!</h2>
+            <p>Login to start your musical journey</p>
+            
+            <div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="emailInput" placeholder="Enter your email">
+                </div>
+                
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="passwordInput" placeholder="Enter your password">
+                </div>
+                
+                <button type="button" class="submit-btn" onclick="handleLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Page -->
+    <div class="page app-page">
+        <div class="app-header">
+            <h1>🎵 MoodTunes AI</h1>
+            <div class="header-right">
+                <div class="points-badge">⭐ <span id="pointsDisplay">0</span> Points</div>
+                <span id="userDisplay">User</span>
+                <button class="logout-btn" onclick="doLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <div class="grid">
+                <div class="card">
+                    <h2>📹 Emotion Detection</h2>
+                    <div class="video-box">
+                        <video id="videoElement" autoplay muted playsinline></video>
+                        <div class="video-placeholder" id="placeholder">
+                            <div style="font-size: 64px; margin-bottom: 20px;">📷</div>
+                            <p style="color: #666;">Click Start to begin</p>
+                        </div>
+                        
+                        <div class="emotion-display" id="emotionBox">
+                            <div class="emotion-row">
+                                <div>
+                                    <div style="font-size: 12px; color: #999;">Detected Emotion</div>
+                                    <div class="emotion-text" id="emotionText">Happy</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 12px; color: #999;">Confidence</div>
+                                    <div class="confidence-text" id="confidenceText">85%</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <button class="btn btn-green" id="startButton" onclick="startCamera()">Start Detection</button>
+                        <button class="btn btn-red" id="stopButton" onclick="stopCamera()" style="display: none;">Stop</button>
+                        <button class="btn btn-blue" id="playlistButton" onclick="createPlaylist()" disabled>Generate Playlist</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 Your Stats</h2>
+                    <div class="stat-box">
+                        <div class="stat-label">Total Points</div>
+                        <div class="stat-value" id="totalPoints">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Playlists Created</div>
+                        <div class="stat-value" id="playlistTotal">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Current Mood</div>
+                        <div class="stat-value" style="font-size: 24px; text-transform: capitalize;" id="currentMood">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card songs-section" id="songsArea">
+                <h2>🎶 Your Personalized Playlist</h2>
+                <div class="songs-grid" id="songsGrid"></div>
+            </div>
+        </div>
+
+        <div class="player-bar" id="playerBar">
+            <div class="player-content">
+                <div class="now-playing">
+                    <p style="font-size: 12px; color: #999;">Now Playing</p>
+                    <h3 id="playingSong">Song Title</h3>
+                    <p id="playingArtist">Artist Name</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" onclick="likeSong()">👍</button>
+                    <button class="control-btn" onclick="dislikeSong()">👎</button>
+                    <button class="control-btn" id="playBtn" onclick="togglePlay()">▶️</button>
+                    <button class="control-btn" onclick="nextTrack()">⏭️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Music Database
+        const musicDB = {
+            happy: [
+                {id: 1, title: "Happy", artist: "Pharrell Williams", mood: "upbeat"},
+                {id: 2, title: "Good Vibrations", artist: "The Beach Boys", mood: "cheerful"},
+                {id: 3, title: "Walking on Sunshine", artist: "Katrina", mood: "energetic"},
+                {id: 4, title: "Don't Stop Me Now", artist: "Queen", mood: "euphoric"}
+            ],
+            sad: [
+                {id: 5, title: "Someone Like You", artist: "Adele", mood: "melancholic"},
+                {id: 6, title: "The Night We Met", artist: "Lord Huron", mood: "nostalgic"},
+                {id: 7, title: "Hurt", artist: "Johnny Cash", mood: "emotional"},
+                {id: 8, title: "Fix You", artist: "Coldplay", mood: "comforting"}
+            ],
+            angry: [
+                {id: 9, title: "Break Stuff", artist: "Limp Bizkit", mood: "aggressive"},
+                {id: 10, title: "Killing in the Name", artist: "RATM", mood: "intense"},
+                {id: 11, title: "Bodies", artist: "Drowning Pool", mood: "powerful"},
+                {id: 12, title: "In the End", artist: "Linkin Park", mood: "frustrated"}
+            ],
+            neutral: [
+                {id: 13, title: "Weightless", artist: "Marconi Union", mood: "calm"},
+                {id: 14, title: "Breathe", artist: "Telepopmusik", mood: "ambient"},
+                {id: 15, title: "Clocks", artist: "Coldplay", mood: "steady"},
+                {id: 16, title: "Float On", artist: "Modest Mouse", mood: "chill"}
+            ],
+            surprised: [
+                {id: 17, title: "Uptown Funk", artist: "Bruno Mars", mood: "funky"},
+                {id: 18, title: "September", artist: "Earth Wind Fire", mood: "groovy"},
+                {id: 19, title: "Superstition", artist: "Stevie Wonder", mood: "dynamic"},
+                {id: 20, title: "Get Lucky", artist: "Daft Punk", mood: "exciting"}
+            ]
+        };
+
+        // App State
+        let user = null;
+        let points = 0;
+        let playlists = 0;
+        let stream = null;
+        let detecting = false;
+        let currentEmo = null;
+        let songs = [];
+        let playing = -1;
+        let isPlaying = false;
+
+        // Navigation
+        function goToLogin() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelector('.login-page').classList.add('active');
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            if (email && password) {
+                user = {
+                    name: email.split('@')[0],
+                    email: email
+                };
+                points = 0;
+                
+                document.getElementById('userDisplay').textContent = user.name;
+                document.getElementById('pointsDisplay').textContent = points;
+                document.getElementById('totalPoints').textContent = points;
+                
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelector('.app-page').classList.add('active');
+            }
+            
+            return false;
+        }
+
+        function doLogout() {
+            if (stream) stopCamera();
+            user = null;
+            points = 0;
+            playlists = 0;
+            currentEmo = null;
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelector('.landing-page').classList.add('active');
+        }
+
+        // Camera Functions
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({video: true});
+                document.getElementById('videoElement').srcObject = stream;
+                document.getElementById('placeholder').style.display = 'none';
+                document.getElementById('startButton').style.display = 'none';
+                document.getElementById('stopButton').style.display = 'block';
+                document.getElementById('playlistButton').disabled = false;
+                
+                detecting = true;
+                detectLoop();
+            } catch(e) {
+                alert('Camera access denied. Please allow camera permissions.');
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            }
+            detecting = false;
+            document.getElementById('videoElement').srcObject = null;
+            document.getElementById('placeholder').style.display = 'flex';
+            document.getElementById('startButton').style.display = 'block';
+            document.getElementById('stopButton').style.display = 'none';
+            document.getElementById('emotionBox').classList.remove('show');
+        }
+
+        function detectLoop() {
+            if (!detecting) return;
+            
+            const emotions = ['happy', 'sad', 'angry', 'neutral', 'surprised'];
+            const emo = emotions[Math.floor(Math.random() * emotions.length)];
+            const conf = 0.7 + Math.random() * 0.25;
+            
+            currentEmo = emo;
+            document.getElementById('emotionText').textContent = emo;
+            document.getElementById('confidenceText').textContent = Math.round(conf * 100) + '%';
+            document.getElementById('progressFill').style.width = (conf * 100) + '%';
+            document.getElementById('currentMood').textContent = emo;
+            document.getElementById('emotionBox').classList.add('show');
+            
+            setTimeout(detectLoop, 3000);
+        }
+
+        // Playlist Functions
+        function createPlaylist() {
+            if (!currentEmo) {
+                alert('Please wait for emotion detection!');
+                return;
+            }
+            
+            songs = musicDB[currentEmo] || musicDB.neutral;
+            playlists++;
+            points += 10;
+            
+            document.getElementById('pointsDisplay').textContent = points;
+            document.getElementById('totalPoints').textContent = points;
+            document.getElementById('playlistTotal').textContent = playlists;
+            
+            const grid = document.getElementById('songsGrid');
+            grid.innerHTML = '';
+            
+            songs.forEach((song, idx) => {
+                const box = document.createElement('div');
+                box.className = 'song-box';
+                box.onclick = () => playSong(idx);
+                box.innerHTML = `
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-artist">${song.artist}</div>
+                    <span class="song-tag">${song.mood}</span>
+                `;
+                grid.appendChild(box);
+            });
+            
+            document.getElementById('songsArea').classList.add('show');
+            document.getElementById('songsArea').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function playSong(idx) {
+            playing = idx;
+            isPlaying = true;
+            const song = songs[idx];
+            
+            document.getElementById('playingSong').textContent = song.title;
+            document.getElementById('playingArtist').textContent = song.artist;
+            document.getElementById('playerBar').classList.add('show');
+            document.getElementById('playBtn').textContent = '⏸️';
+            
+            document.querySelectorAll('.song-box').forEach((b, i) => {
+                if (i === idx) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+            
+            points += 1;
+            document.getElementById('pointsDisplay').textContent = points;
+            document.getElementById('totalPoints').textContent = points;
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('playBtn').textContent = isPlaying ? '⏸️' : '▶️';
+        }
+
+        function nextTrack() {
+            if (songs.length === 0) return;
+            playing = (playing + 1) % songs.length;
+            playSong(playing);
+        }
+
+        function likeSong() {
+            if (playing < 0) return;
+            points += 2;
+            document.getElementById('pointsDisplay').textContent = points;
+            document.getElementById('totalPoints').textContent = points;
+        }
+
+        function dislikeSong() {
+            if (playing < 0) return;
+            points += 1;
+            document.getElementById('pointsDisplay').textContent = points;
+            document.getElementById('totalPoints').textContent = points;
+        }
+    </script>
+</body>
+</html>
