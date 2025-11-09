@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<CountDaysConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <isTopMost>false</isTopMost>
+  <backgound>#FF000000</backgound>
+  <ShowCountDayWidget>false</ShowCountDayWidget>
+  <WidgetWindowInfo>
+    <Location>
+      <X>1136</X>
+      <Y>0</Y>
+    </Location>
+    <Size>
+      <Width>400</Width>
+      <Height>320</Height>
+    </Size>
+    <X>1136</X>
+    <Y>0</Y>
+    <Width>400</Width>
+    <Height>320</Height>
+  </WidgetWindowInfo>
+  <CountDays />
+  <IsLock>false</IsLock>
+  <WidgetOpacity>70</WidgetOpacity>
+  <IsTopMost>false</IsTopMost>
+  <Backgound>#FF000000</Backgound>
+</CountDaysConfig>

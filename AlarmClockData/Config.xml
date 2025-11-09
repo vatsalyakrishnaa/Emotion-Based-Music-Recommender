@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ClockConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ClockThemeName>Digital</ClockThemeName>
+  <ClockThemeColor>1</ClockThemeColor>
+  <IsShowUpcoming>false</IsShowUpcoming>
+  <IsShowSecond>false</IsShowSecond>
+  <IsShowAsWallPaper>false</IsShowAsWallPaper>
+  <IsShowAsWidget>false</IsShowAsWidget>
+  <SelectedScreenNames />
+  <IsScreenHibernate>false</IsScreenHibernate>
+  <IsMultiScreen>false</IsMultiScreen>
+  <Is12H>true</Is12H>
+  <WidgetWindowInfo>
+    <Location>
+      <X>500</X>
+      <Y>200</Y>
+    </Location>
+    <Size>
+      <Width>500</Width>
+      <Height>300</Height>
+    </Size>
+    <X>500</X>
+    <Y>200</Y>
+    <Width>500</Width>
+    <Height>300</Height>
+  </WidgetWindowInfo>
+  <WidgetOpacity>0</WidgetOpacity>
+  <IsPin>false</IsPin>
+  <IsLock>false</IsLock>
+  <Transparency>0.5</Transparency>
+  <IsAutoLaunch>true</IsAutoLaunch>
+  <SelectLanguageName>en-US</SelectLanguageName>
+  <IsTopMost>false</IsTopMost>
+  <ScreenWidth>0</ScreenWidth>
+  <ScreenHeight>0</ScreenHeight>
+  <ShowBackgroundImage>false</ShowBackgroundImage>
+</ClockConfig>
